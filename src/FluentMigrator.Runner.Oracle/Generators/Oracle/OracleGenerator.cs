@@ -56,6 +56,15 @@ namespace FluentMigrator.Runner.Generators.Oracle
         {
         }
 
+        public OracleGenerator(
+            [NotNull] IColumn column,
+            [NotNull] OracleQuoterBase quoter,
+            [NotNull] IOptions<GeneratorOptions> generatorOptions)
+            : base(column, quoter, new OracleDescriptionGenerator(), generatorOptions)
+        {
+        }
+
+
         private static OracleQuoterBase GetQuoter(bool useQuotedIdentifiers)
         {
             return useQuotedIdentifiers ? new OracleQuoterQuotedIdentifier() : new OracleQuoter();

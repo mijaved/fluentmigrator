@@ -57,6 +57,7 @@ namespace FluentMigrator.Runner.Processors
             Register(new MySql4ProcessorFactory());
             Register(new MySql5ProcessorFactory());
             Register(new OracleManagedProcessorFactory());
+            Register(new Oracle12cManagedProcessorFactory());
             Register(new OracleProcessorFactory());
             Register(new PostgresProcessorFactory());
             Register(new SQLiteProcessorFactory());
