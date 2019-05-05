@@ -14,6 +14,8 @@
 // limitations under the License.
 #endregion
 
+using System.Collections.Generic;
+
 using FluentMigrator.Runner.Generators.Oracle;
 using FluentMigrator.Runner.Initialization;
 
@@ -24,16 +26,38 @@ using Microsoft.Extensions.Options;
 
 namespace FluentMigrator.Runner.Processors.Oracle
 {
-    public class Oracle12cManagedProcessor : OracleProcessorBase
+    /// <summary>
+    /// A processor for Oracle 12c using the managed database access library
+    /// </summary>
+    public class Oracle12CManagedProcessor : OracleManagedProcessor
     {
-        public Oracle12cManagedProcessor(
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Oracle12CManagedProcessor"/> class.
+        /// </summary>
+        /// <param name="factory">The DB object factory</param>
+        /// <param name="generator">The SQL generator</param>
+        /// <param name="logger">The logger</param>
+        /// <param name="options">The processor options</param>
+        /// <param name="connectionStringAccessor">The accessor for the connection strings</param>
+        public Oracle12CManagedProcessor(
             [NotNull] OracleManagedDbFactory factory,
-            [NotNull] Oracle12cGenerator generator,
-            [NotNull] ILogger<Oracle12cManagedProcessor> logger,
+            [NotNull] IOracle12CGenerator generator,
+            [NotNull] ILogger<Oracle12CManagedProcessor> logger,
             [NotNull] IOptionsSnapshot<ProcessorOptions> options,
-            [NotNull] IConnectionStringAccessor connectionStringAccessor)
-            : base("OracleManaged", factory, generator, logger, options, connectionStringAccessor)
+            [NotNull] IConnectionStringAccessor connectionStringAccessor) : base(
+            factory,
+            generator,
+            logger,
+            options,
+            connectionStringAccessor)
         {
         }
+
+        /// <inheritdoc />
+        public override string DatabaseType => "Oracle12cManaged";
+
+        /// <inheritdoc />
+        public override IList<string> DatabaseTypeAliases { get; } = new List<string>()
+            { "Oracle-12c-Manager", "Oracle 12c Managed", "Oracle Managed", "Oracle" };
     }
 }
