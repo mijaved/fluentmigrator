@@ -57,6 +57,8 @@ namespace FluentMigrator.Runner.Initialization
         /// <summary>
         /// Gets or sets the start version
         /// </summary>
+        /// <remarks>This will be used only if <see cref="NoConnection"/> is set to true.
+        /// Otherwise current state of target database will determine which migrations are needed.</remarks>
         public long StartVersion { get; set; }
 
         /// <summary>
@@ -105,6 +107,16 @@ namespace FluentMigrator.Runner.Initialization
         /// state of the database.
         /// </remarks>
         public bool NoConnection { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether untagged maintenance items should always be loaded/executed.
+        /// </summary>
+        public bool IncludeUntaggedMaintenances { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether untagged migrations should always be loaded/executed.
+        /// </summary>
+        public bool IncludeUntaggedMigrations { get; set; } = true;
 
         /// <summary>
         /// Sets the values from the given runner context

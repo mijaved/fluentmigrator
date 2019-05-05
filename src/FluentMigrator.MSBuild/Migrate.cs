@@ -112,6 +112,14 @@ namespace FluentMigrator.MSBuild
 
         public string ProviderSwitches { get; set; }
 
+        public bool StripComments { get; set; } = true;
+
+        public bool IncludeUntaggedMaintenances { get; set; }
+
+        public bool IncludeUntaggedMigrations { get; set; } = true;
+
+        public string DefaultSchemaName { get; set; }
+
         private bool ExecutingAgainstMsSql => _databaseType.StartsWith("SqlServer", StringComparison.InvariantCultureIgnoreCase);
 
         public override bool Execute()
@@ -152,7 +160,7 @@ namespace FluentMigrator.MSBuild
 
         private void ExecuteMigrations()
         {
-            var conventionSet = new DefaultConventionSet(defaultSchemaName: null, WorkingDirectory);
+            var conventionSet = new DefaultConventionSet(DefaultSchemaName, WorkingDirectory);
 
             var services = CreateCoreServices()
                 .AddSingleton<IConventionSet>(conventionSet)
@@ -182,6 +190,8 @@ namespace FluentMigrator.MSBuild
 #pragma warning restore 612
                         opt.TransactionPerSession = TransactionPerSession;
                         opt.AllowBreakingChange = AllowBreakingChange;
+                        opt.IncludeUntaggedMigrations = IncludeUntaggedMigrations;
+                        opt.IncludeUntaggedMaintenances = IncludeUntaggedMaintenances;
                     })
                 .Configure<ProcessorOptions>(
                     opt =>
@@ -189,6 +199,7 @@ namespace FluentMigrator.MSBuild
                         opt.ConnectionString = Connection;
                         opt.PreviewOnly = PreviewOnly;
                         opt.ProviderSwitches = ProviderSwitches;
+                        opt.StripComments = StripComments;
                         opt.Timeout = _timeout == null ? null : (TimeSpan?)TimeSpan.FromSeconds(_timeout.Value);
                     });
 
@@ -221,13 +232,17 @@ namespace FluentMigrator.MSBuild
                         .AddDb2()
                         .AddDb2ISeries()
                         .AddDotConnectOracle()
+                        .AddDotConnectOracle12C()
                         .AddFirebird()
                         .AddHana()
                         .AddMySql4()
                         .AddMySql5()
                         .AddOracle()
+                        .AddOracle12C()
                         .AddOracleManaged()
+                        .AddOracle12CManaged()
                         .AddPostgres()
+                        .AddPostgres92()
                         .AddRedshift()
                         .AddSqlAnywhere()
                         .AddSQLite()

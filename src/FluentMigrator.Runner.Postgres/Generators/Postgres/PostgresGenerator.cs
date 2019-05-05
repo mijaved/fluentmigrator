@@ -33,11 +33,6 @@ namespace FluentMigrator.Runner.Generators.Postgres
 {
     public class PostgresGenerator : GenericGenerator
     {
-        public PostgresGenerator()
-            : this(new PostgresQuoter())
-        {
-        }
-
         public PostgresGenerator(
             [NotNull] PostgresQuoter quoter)
             : this(quoter, new OptionsWrapper<GeneratorOptions>(new GeneratorOptions()))
@@ -47,7 +42,15 @@ namespace FluentMigrator.Runner.Generators.Postgres
         public PostgresGenerator(
             [NotNull] PostgresQuoter quoter,
             [NotNull] IOptions<GeneratorOptions> generatorOptions)
-            : base(new PostgresColumn(), quoter, new PostgresDescriptionGenerator(), generatorOptions)
+            : base(new PostgresColumn(quoter, new PostgresTypeMap()), quoter, new PostgresDescriptionGenerator(quoter), generatorOptions)
+        {
+        }
+
+        protected PostgresGenerator(
+            [NotNull] PostgresQuoter quoter,
+            [NotNull] IOptions<GeneratorOptions> generatorOptions,
+            ITypeMap typeMap)
+            : base(new PostgresColumn(quoter, typeMap), quoter, new PostgresDescriptionGenerator(quoter), generatorOptions)
         {
         }
 
@@ -129,7 +132,8 @@ namespace FluentMigrator.Runner.Generators.Postgres
         public override string Generate(DeleteColumnExpression expression)
         {
             StringBuilder builder = new StringBuilder();
-            foreach (string columnName in expression.ColumnNames) {
+            foreach (string columnName in expression.ColumnNames)
+            {
                 if (expression.ColumnNames.First() != columnName) builder.AppendLine("");
                 builder.AppendFormat("ALTER TABLE {0} DROP COLUMN {1};",
                     Quoter.QuoteTableName(expression.TableName, expression.SchemaName),
@@ -179,7 +183,7 @@ namespace FluentMigrator.Runner.Generators.Postgres
                 else
                     result.Append(",");
 
-                result.Append("\"" + column.Name + "\"");
+                result.Append(Quoter.QuoteColumnName(column.Name));
                 result.Append(column.Direction == Direction.Ascending ? " ASC" : " DESC");
             }
             result.Append(");");
